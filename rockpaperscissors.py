@@ -19,15 +19,12 @@ def winner(cpuChoice, playerChoice):
 		return 2
 
 rounds = int(input("How many rounds would you like to play? ")) + 1
-
 currentRound = 1
 handsDict = {1:"Rock",2:"Paper",3:"Scissors"}
 playerHand = ""
 playerWins = 0
-
 cpuHand = 0
 cpuWins = 0
-
 whoWon = 0
 
 while currentRound != rounds:
