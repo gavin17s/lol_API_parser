@@ -1,0 +1,76 @@
+import requests
+
+def requestPlayerData(pName, uRegion, uAPI):
+
+	apiURL = "https://"+uRegion+".api.pvp.net/api/lol/"+uRegion+"/v1.4/summoner/by-name/"+pName+"?api_key="+uAPI
+	nameResponse = requests.get(apiURL)
+
+	return nameResponse.json()
+
+def requestPlayerRank(pID, uRegion, uAPI):
+
+	apiURL = "https://"+uRegion+".api.pvp.net/api/lol/"+uRegion+"/v2.5/league/by-summoner/"+pID+"/entry?api_key="+uAPI
+	rankResponse = requests.get(apiURL)
+
+	return rankResponse.json()
+
+def displayPlayerData(pID, pName, pRank):
+
+	print("Player {} is {} {} with {} LP.".format(pName, pRank[pID][0]['tier'], pRank[pID][0]['entries'][0]['division'], pRank[pID][0]['entries'][0]['leaguePoints']))
+
+def main():
+
+	exitYes = False
+	userOption1 = 0
+	userAPI = ""
+	userRegion = ""
+	requestName = ""
+
+	print("A simple program for parsing the Riot Games LoL API v0.1 by Gavin Su, http://gavin.su\n")
+
+	while exitYes != True:
+		print("=========================================================\nWhat would you like to do?")
+		print("0. Exit.")
+
+		if userAPI == "":
+			print("1. Enter API key.")
+		else:
+			print("1. Change API key, current API key in use is: {}".format(userAPI))
+
+		if userRegion == "":
+			print("2. Set region.")
+		else:
+			print("2. Change region, current region is {}.".format(userRegion))
+
+		print("3. Look up player data.")
+
+		print("=========================================================")
+		try:
+			userOption1 = int(input("\nYour selection: "))
+ 
+			if userOption1 == 0:
+				exitYes = True
+			elif userOption1 == 1:
+				userAPI = input("Enter your API key: ").lower()
+			elif userOption1 == 2:
+				userRegion = input("Enter your region: ").lower()
+			elif userOption1 == 3:
+				if userAPI == "" or userRegion == "":
+					print("You must enter your API key and region to use this function.")
+				else:
+					requestName = input("Enter the player name (No spaces): ").lower()
+
+					nameResponse = requestPlayerData(requestName, userRegion, userAPI)
+					playerID = str(nameResponse[requestName]["id"])
+					playerRank = requestPlayerRank(playerID, userRegion, userAPI)
+					displayPlayerData(playerID, nameResponse[requestName]["name"], playerRank)
+
+				input("Press enter to continue...")
+
+			else:
+				print("Please enter a valid option.")
+		except:
+			print("Error.")
+			input("Press enter to continue...")
+
+main()
