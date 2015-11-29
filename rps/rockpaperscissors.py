@@ -1,3 +1,7 @@
+#A simple Rock Papers Scissors game vs a RNG computer
+#Gavin Su
+#http://gavin.su
+
 import random
 
 print("Rock Paper Scissors v0.1 by Gavin Su, http://gavin.su")
