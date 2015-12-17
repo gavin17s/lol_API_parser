@@ -43,8 +43,11 @@ def currentGame(pID, uRegion, uAPI):
 
 def displayCurrentGame(gameData, uRegion, uAPI):
 
-	mapType = {3:"The Proving Grounds", 8:"The Crystal Scar", 10:"Twisted Treeline", 11:"Summoner's Rift", 12:"Howling Abyss", 14:"Butcher's Bridge"}
-	queueType = {0:"Custom", 8:"Normal 3v3", 2:"Normal 5v5 Blind", 14:"Normal 5v5 Draft", 4:"Ranked 5v5 Solo", 41:"Ranked Team 3v3", 42:"Ranked Team 5v5", 16:"Dominion Blind", 17:"Dominion Draft", 25:"Dominion vs AI", 31:"Summoner's Rift vs AI Intro", 32:"Summoner's Rift vs AI Beginner", 33:"Summoner's Rift vs AI Intermediate", 52:"Twisted Treeline vs AI", 61:"Team Builder", 65:"All Random, All Mid", 70:"One for All", 72:"Snowdown Showdown 1v1", 73:"Snowdown Showdown 2v2", 75:"Summoner's Rift 6v6 Hexakill", 76:"Ultra Rapid Fire", 83:"Ultra Rapid Fire vs AI", 91:"Doom Bots Rank 1", 92:"Doom Bots Rank 2", 93:"Doom Bots Rank 3", 96:"Ascension", 98:"Twisted Treeline 6v6 Hexakill", 100:"All Random, All Mid", 300:"King Poro", 310:"Nemesis", 313:"Black Market Brawlers"}
+	with open("data/mapType.json") as jsonFileRead:
+			mapType = json.load(jsonFileRead)
+
+	with open("data/queueType.json") as jsonFileRead:
+			queueType = json.load(jsonFileRead)
 
 	if gameData == False:
 		print("Player currently not ingame.")
@@ -52,15 +55,18 @@ def displayCurrentGame(gameData, uRegion, uAPI):
 		with open("data/championDict.json") as jsonFileRead:
 			championDict = json.load(jsonFileRead)
 
-		print("Player currently ingame.\nMap: {}\nGame mode: {}".format(mapType[gameData["mapId"]], queueType[gameData["gameQueueConfigId"]]))
+		mapStr = str(gameData["mapId"])
+		queueStr = str(gameData["gameQueueConfigId"])
+		print("Player currently ingame.\nMap: {}\nGame mode: {}".format(mapType[mapStr], queueType[queueStr]))
 		if gameData["gameQueueConfigId"] == 14 or gameData["gameQueueConfigId"] == 4 or gameData["gameQueueConfigId"] == 41 or gameData["gameQueueConfigId"] == 42:
 			print("Banned champions:")
 			for championB in gameData["bannedChampions"]:
-				if championB["championId"] not in championDict:
+				championIDStr = str(championB["championId"])
+				if championIDStr not in championDict:
 					print("test - calling api")
 					cNameFromID = getChampionName(championB, uRegion, uAPI)
-					championDict[championB["championId"]] = cNameFromID["name"]
-				print(championDict[championB["championId"]])
+					championDict[championIDStr] = cNameFromID["name"]
+				print(championDict[championIDStr])
 			with open("data/championDict.json", "w") as jsonFileWrite:
 				json.dump(championDict, jsonFileWrite)
 
