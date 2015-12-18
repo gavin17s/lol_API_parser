@@ -2,7 +2,7 @@
 #Gavin Su
 #http://gavin.su
 
-import requests
+import requests #Use pip install requests to acquire package
 import json
 
 def getChampionName(championID, uRegion, uAPI):
