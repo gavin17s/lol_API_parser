@@ -1,9 +1,11 @@
 #A simple parser for Riot's LoL API (WiP)
 #Gavin Su
 #http://gavin.su
+#v0.2
 
-import requests #Use "pip install requests" to acquire package
+import codecs
 import json
+import urllib.request
 
 def getChampionName(championID, uRegion, uAPI):
 
@@ -14,9 +16,11 @@ def getChampionName(championID, uRegion, uAPI):
 
 	if championIDStr not in championDict:
 		apiURL = "https://"+uRegion+".api.pvp.net/api/lol/static-data/"+uRegion+"/v1.2/champion/"+str(championID)+"?dataById=true&api_key="+uAPI
-		nameResponse = requests.get(apiURL)
+		reader = codecs.getreader("utf-8")
+		nameResponse = urllib.request.urlopen(apiURL)
+		nameResponse = json.load(reader(nameResponse))
 
-		championDict[championIDStr] = nameResponse.json()["name"]
+		championDict[championIDStr] = nameResponse["name"]
 
 		with open("data/championDict.json", "w") as jsonFileWrite:
 			json.dump(championDict, jsonFileWrite)
@@ -26,16 +30,22 @@ def getChampionName(championID, uRegion, uAPI):
 def requestPlayerData(pName, uRegion, uAPI):
 
 	apiURL = "https://"+uRegion+".api.pvp.net/api/lol/"+uRegion+"/v1.4/summoner/by-name/"+pName+"?api_key="+uAPI
-	nameResponse = requests.get(apiURL)
 
-	return nameResponse.json()
+	reader = codecs.getreader("utf-8")
+	nameResponse = urllib.request.urlopen(apiURL)
+	nameResponse = json.load(reader(nameResponse))
+
+	return nameResponse
 
 def requestPlayerRank(pID, uRegion, uAPI):
 
 	apiURL = "https://"+uRegion+".api.pvp.net/api/lol/"+uRegion+"/v2.5/league/by-summoner/"+pID+"/entry?api_key="+uAPI
-	rankResponse = requests.get(apiURL)
 
-	return rankResponse.json()
+	reader = codecs.getreader("utf-8")
+	rankResponse = urllib.request.urlopen(apiURL)
+	rankResponse = json.load(reader(rankResponse))
+
+	return rankResponse
 
 def displayPlayerData(pID, pName, pRank):
 
@@ -45,10 +55,13 @@ def currentGame(pID, uRegion, uAPI):
 
 	platformID = {"br":"BR1", "eune":"EUN1", "euw":"EUW1", "kr":"KR", "lan":"LA1", "las":"LA2", "na":"NA1", "oce":"OC1", "tr":"TR1", "ru":"RU"}
 	apiURL = "https://"+uRegion+".api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/"+platformID[uRegion]+"/"+pID+"?api_key="+uAPI
-	gameResponse = requests.get(apiURL)
+
+	reader = codecs.getreader("utf-8")
+	gameResponse = urllib.request.urlopen(apiURL)
+	gameResponse = json.load(reader(gameResponse))
 
 	try:
-		return gameResponse.json()
+		return gameResponse
 	except:
 		return False
 
@@ -63,12 +76,9 @@ def displayCurrentGame(gameData, uRegion, uAPI):
 	if gameData == False:
 		print("Player currently not ingame.")
 	else:
-		with open("data/championDict.json") as jsonFileRead:
-			championDict = json.load(jsonFileRead)
-
 		mapStr = str(gameData["mapId"])
 		queueStr = str(gameData["gameQueueConfigId"])
-		print("Player currently ingame.\nMap: {}\nGame mode: {}".format(mapType[mapStr], queueType[queueStr]))
+		print("Player currently ingame.\nMap: {}\nGame mode: {}\n".format(mapType[mapStr], queueType[queueStr]))
 		if gameData["gameQueueConfigId"] == 14 or gameData["gameQueueConfigId"] == 4 or gameData["gameQueueConfigId"] == 41 or gameData["gameQueueConfigId"] == 42:
 			print("Banned champions:")
 			for championB in gameData["bannedChampions"]:
@@ -93,7 +103,7 @@ def main():
 	userRegion = ""
 	requestName = ""
 
-	print("A simple program for parsing the Riot Games LoL API v0.1 by Gavin Su, http://gavin.su\n")
+	print("A simple program for parsing the Riot Games LoL API v0.2 by Gavin Su, http://gavin.su\n")
 
 	while exitYes != True:
 		print("=========================================================\nWhat would you like to do?")
@@ -144,4 +154,3 @@ def main():
 			pass
 
 main()
-
