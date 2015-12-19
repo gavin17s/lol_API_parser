@@ -7,10 +7,21 @@ import json
 
 def getChampionName(championID, uRegion, uAPI):
 
-	apiURL = "https://"+uRegion+".api.pvp.net/api/lol/static-data/"+uRegion+"/v1.2/champion/"+str(championID["championId"])+"?dataById=true&api_key="+uAPI
-	nameResponse = requests.get(apiURL)
+	with open("data/championDict.json") as jsonFileRead:
+		championDict = json.load(jsonFileRead)
 
-	return nameResponse.json()
+		championIDStr = str(championID)
+
+	if championIDStr not in championDict:
+		apiURL = "https://"+uRegion+".api.pvp.net/api/lol/static-data/"+uRegion+"/v1.2/champion/"+str(championID)+"?dataById=true&api_key="+uAPI
+		nameResponse = requests.get(apiURL)
+
+		championDict[championIDStr] = nameResponse.json()["name"]
+
+		with open("data/championDict.json", "w") as jsonFileWrite:
+			json.dump(championDict, jsonFileWrite)
+
+	return championDict[championIDStr]
 
 def requestPlayerData(pName, uRegion, uAPI):
 
@@ -61,14 +72,18 @@ def displayCurrentGame(gameData, uRegion, uAPI):
 		if gameData["gameQueueConfigId"] == 14 or gameData["gameQueueConfigId"] == 4 or gameData["gameQueueConfigId"] == 41 or gameData["gameQueueConfigId"] == 42:
 			print("Banned champions:")
 			for championB in gameData["bannedChampions"]:
-				championIDStr = str(championB["championId"])
-				if championIDStr not in championDict:
-					print("test - calling api")
-					cNameFromID = getChampionName(championB, uRegion, uAPI)
-					championDict[championIDStr] = cNameFromID["name"]
-				print(championDict[championIDStr])
-			with open("data/championDict.json", "w") as jsonFileWrite:
-				json.dump(championDict, jsonFileWrite)
+				print(getChampionName(championB["championId"], uRegion, uAPI))
+
+		print("\nBlue side:")
+		for summ in gameData["participants"]:
+			if summ["teamId"] == 100:
+				print(summ["summonerName"], "playing", getChampionName(summ["championId"], uRegion, uAPI))
+		print("\nRed side:")
+		for summ in gameData["participants"]:
+			if summ["teamId"] == 200:
+				print(summ["summonerName"], "playing", getChampionName(summ["championId"], uRegion, uAPI))
+
+				
 
 def main():
 
@@ -129,3 +144,4 @@ def main():
 			pass
 
 main()
+
