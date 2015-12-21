@@ -49,21 +49,21 @@ def requestPlayerRank(pID, uRegion, uAPI):
 
 def displayPlayerData(pID, pName, pRank):
 
-	print("Player {} is {} {} with {} LP.\n".format(pName, pRank[pID][0]['tier'], pRank[pID][0]['entries'][0]['division'], pRank[pID][0]['entries'][0]['leaguePoints']))
+	print("\nPlayer {} is {} {} with {} LP.\n".format(pName, pRank[pID][0]['tier'], pRank[pID][0]['entries'][0]['division'], pRank[pID][0]['entries'][0]['leaguePoints']))
 
 def currentGame(pID, uRegion, uAPI):
 
-	platformID = {"br":"BR1", "eune":"EUN1", "euw":"EUW1", "kr":"KR", "lan":"LA1", "las":"LA2", "na":"NA1", "oce":"OC1", "tr":"TR1", "ru":"RU"}
-	apiURL = "https://"+uRegion+".api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/"+platformID[uRegion]+"/"+pID+"?api_key="+uAPI
+    platformID = {"br":"BR1", "eune":"EUN1", "euw":"EUW1", "kr":"KR", "lan":"LA1", "las":"LA2", "na":"NA1", "oce":"OC1", "tr":"TR1", "ru":"RU"}
+    apiURL = "https://"+uRegion+".api.pvp.net/observer-mode/rest/consumer/getSpectatorGameInfo/"+platformID[uRegion]+"/"+pID+"?api_key="+uAPI
 
-	reader = codecs.getreader("utf-8")
-	gameResponse = urllib.request.urlopen(apiURL)
-	gameResponse = json.load(reader(gameResponse))
-
-	try:
-		return gameResponse
-	except:
-		return False
+    reader = codecs.getreader("utf-8")
+    try:
+        gameResponse = urllib.request.urlopen(apiURL)
+        gameResponse = json.load(reader(gameResponse))
+    except:
+        return False
+        
+    return gameResponse
 
 def displayCurrentGame(gameData, uRegion, uAPI):
 
@@ -78,7 +78,7 @@ def displayCurrentGame(gameData, uRegion, uAPI):
 	else:
 		mapStr = str(gameData["mapId"])
 		queueStr = str(gameData["gameQueueConfigId"])
-		print("Player currently ingame.\nMap: {}\nGame mode: {}\n".format(mapType[mapStr], queueType[queueStr]))
+		print("Player currently ingame.\n\nMap: {}\nGame mode: {}\n".format(mapType[mapStr], queueType[queueStr]))
 		if gameData["gameQueueConfigId"] == 14 or gameData["gameQueueConfigId"] == 4 or gameData["gameQueueConfigId"] == 41 or gameData["gameQueueConfigId"] == 42:
 			print("Banned champions:")
 			for championB in gameData["bannedChampions"]:
@@ -143,7 +143,7 @@ def main():
 					displayPlayerData(playerID, nameResponse[requestName]["name"], playerRank)
 					displayCurrentGame(currentGame(playerID, userRegion, userAPI), userRegion, userAPI)
 
-				input("Press enter to continue...")
+				input("\nPress enter to continue...")
 
 			else:
 				print("Please enter a valid option.")
