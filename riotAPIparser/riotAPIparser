@@ -4,63 +4,66 @@
 #v0.2
 
 from subroutineAPI import *
+from readWriteAPI import *
 
 def main():
 
-	exitYes = False
-	userOption1 = 0
-	userAPI = ""
-	userRegion = ""
-	requestName = ""
+    exitYes = False
+    userOption1 = 0
+    userAPI = loadAPIKey()
+    userRegion = ""
+    requestName = ""
 
-	print("A simple program for parsing the Riot Games LoL API v0.2 by Gavin Su, http://gavin.su\n")
+    print("A simple program for parsing the Riot Games LoL API v0.2 by Gavin Su, http://gavin.su\n")
 
-	while exitYes != True:
-		print("=========================================================\nWhat would you like to do?")
-		print("0. Exit.")
+    while exitYes != True:
+        print("===================================================================================\nWhat would you like to do?")
+        print("0. Exit.")
 
-		if userAPI == "":
-			print("1. Enter API key.")
-		else:
-			print("1. Change API key, current API key in use is: {}".format(userAPI))
+        if userAPI == "Not Set":
+            print("1. Enter API key.")
+        else:
+            print("1. Change API key, current API key in use is: {}".format(userAPI))
 
-		if userRegion == "":
-			print("2. Set region.")
-		else:
-			print("2. Change region, current region is {}.".format(userRegion))
+        if userRegion == "":
+            print("2. Set region.")
+        else:
+            print("2. Change region, current region is {}.".format(userRegion))
 
-		print("3. Look up player data.")
+        print("3. Look up player data.")
 
-		print("=========================================================")
-		try:
-			userOption1 = int(input("\nYour selection: "))
+        print("===================================================================================")
+        try:
+            userOption1 = int(input("\nYour selection: "))
  
-			if userOption1 == 0:
-				exitYes = True
-			elif userOption1 == 1:
-				userAPI = input("Enter your API key: ").lower()
-			elif userOption1 == 2:
-				userRegion = input("Availible regions are: BR, EUWE, EUW, KR, LAN, LAS, NA, OCE, RU, TR\nEnter your region: ").lower()
-			elif userOption1 == 3:
-				if userAPI == "" or userRegion == "":
-					print("You must enter your API key and region to use this function.")
-				else:
-					requestName = input("Enter the player name (No spaces): ").lower()
+            if userOption1 == 0:
+                exitYes = True
+            elif userOption1 == 1:
+                userKey = input("Enter your API key: ").lower()
+                writeAPIKey(userKey)
+                userAPI = loadAPIKey()
+            elif userOption1 == 2:
+                userRegion = input("Availible regions are: BR, EUWE, EUW, KR, LAN, LAS, NA, OCE, RU, TR\nEnter your region: ").lower()
+            elif userOption1 == 3:
+                if userAPI == "Not Set" or userRegion == "":
+                    print("You must enter your API key and region to use this function.")
+                else:
+                    requestName = input("Enter the player name (No spaces): ").lower()
 
-					nameResponse = requestPlayerData(requestName, userRegion, userAPI)
-					playerID = str(nameResponse[requestName]["id"])
-					playerRank = requestPlayerRank(playerID, userRegion, userAPI)
-					displayPlayerData(playerID, nameResponse[requestName]["name"], playerRank)
-					displayCurrentGame(currentGame(playerID, userRegion, userAPI), userRegion, userAPI)
+                    nameResponse = requestPlayerData(requestName, userRegion, userAPI)
+                    playerID = str(nameResponse[requestName]["id"])
+                    playerRank = requestPlayerRank(playerID, userRegion, userAPI)
+                    displayPlayerData(playerID, nameResponse[requestName]["name"], playerRank)
+                    displayCurrentGame(currentGame(playerID, userRegion, userAPI), userRegion, userAPI)
 
-				input("\nPress enter to continue...")
+                input("\nPress enter to continue...")
 
-			else:
-				print("Please enter a valid option.")
+            else:
+                print("Please enter a valid option.")
 #		except:
 #			print("Error.")
 #			input("Press enter to continue...")
-		finally:
-			pass
+        finally:
+            pass
 
 main()
